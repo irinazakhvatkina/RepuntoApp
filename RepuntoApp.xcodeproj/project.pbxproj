@@ -17,6 +17,8 @@
 		312CC9182E3D306400F26701 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312CC9172E3D306400F26701 /* MapViewController.swift */; };
 		312CC9332E3E368700F26701 /* RecyclingPointDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312CC9322E3E368700F26701 /* RecyclingPointDetailViewController.swift */; };
 		312CC9352E3E3B1300F26701 /* RecyclingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312CC9342E3E3B1300F26701 /* RecyclingPoint.swift */; };
+		312CC9372E3E493D00F26701 /* BlogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312CC9362E3E493D00F26701 /* BlogViewController.swift */; };
+		312CC9392E3E4ADD00F26701 /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312CC9382E3E4ADD00F26701 /* Article.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +33,8 @@
 		312CC9172E3D306400F26701 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		312CC9322E3E368700F26701 /* RecyclingPointDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecyclingPointDetailViewController.swift; sourceTree = "<group>"; };
 		312CC9342E3E3B1300F26701 /* RecyclingPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecyclingPoint.swift; sourceTree = "<group>"; };
+		312CC9362E3E493D00F26701 /* BlogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlogViewController.swift; sourceTree = "<group>"; };
+		312CC9382E3E4ADD00F26701 /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,12 +71,14 @@
 				312CC9072E37BF7900F26701 /* App */,
 				312CC8F72E37BCB600F26701 /* MainViewController.swift */,
 				312CC9172E3D306400F26701 /* MapViewController.swift */,
+				312CC9322E3E368700F26701 /* RecyclingPointDetailViewController.swift */,
+				312CC9342E3E3B1300F26701 /* RecyclingPoint.swift */,
+				312CC9362E3E493D00F26701 /* BlogViewController.swift */,
+				312CC9382E3E4ADD00F26701 /* Article.swift */,
 				312CC8F92E37BCB600F26701 /* Main.storyboard */,
 				312CC9012E37BCB700F26701 /* Info.plist */,
 				312CC8FC2E37BCB700F26701 /* Assets.xcassets */,
 				312CC8FE2E37BCB700F26701 /* LaunchScreen.storyboard */,
-				312CC9322E3E368700F26701 /* RecyclingPointDetailViewController.swift */,
-				312CC9342E3E3B1300F26701 /* RecyclingPoint.swift */,
 			);
 			path = RepuntoApp;
 			sourceTree = "<group>";
@@ -167,8 +173,10 @@
 				312CC9352E3E3B1300F26701 /* RecyclingPoint.swift in Sources */,
 				312CC8F42E37BCB600F26701 /* AppDelegate.swift in Sources */,
 				312CC9332E3E368700F26701 /* RecyclingPointDetailViewController.swift in Sources */,
+				312CC9392E3E4ADD00F26701 /* Article.swift in Sources */,
 				312CC8F62E37BCB600F26701 /* SceneDelegate.swift in Sources */,
 				312CC9182E3D306400F26701 /* MapViewController.swift in Sources */,
+				312CC9372E3E493D00F26701 /* BlogViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

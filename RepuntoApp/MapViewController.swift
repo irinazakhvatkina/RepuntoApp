@@ -106,6 +106,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             self.navigationController?.pushViewController(mapVC, animated: true)
         }))
         alert.addAction(UIAlertAction(title: "Блог", style: .default, handler: { _ in
+            let mapVC = BlogViewController()
+            self.navigationController?.pushViewController(mapVC, animated: true)
         }))
         alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
         if let popover = alert.popoverPresentationController {
