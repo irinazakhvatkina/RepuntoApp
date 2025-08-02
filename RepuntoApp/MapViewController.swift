@@ -11,6 +11,28 @@ import MapKit
 
 class MapViewController: UIViewController, MKMapViewDelegate {
     
+    var allPoints: [RecyclingPoint] = [
+            RecyclingPoint(
+                coordinate: CLLocationCoordinate2D(latitude: 38.56, longitude: 68.78),
+                materialType: "пластик",
+                title: "Пункт 1",
+                address: "address",
+                description: "Описание пункта 1",
+                photos: [UIImage(named: "logo_light")!, UIImage(named: "clean_earth")!],
+                contacts: ["+123456789", "email@example.com"]
+            ),
+            RecyclingPoint(
+                coordinate: CLLocationCoordinate2D(latitude: 38.57, longitude: 68.79),
+                materialType: "металл",
+                title: "Пункт 2",
+                address: "address",
+                description: "Описание пункта 2",
+                photos: [],
+                contacts: []
+            ),
+        ]
+
+    
     var mapView: MKMapView!
 
     var isDarkMode: Bool {
@@ -21,20 +43,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     var themeToggleButton: UIButton!
     var filterButton: UIButton!
     var selectedMaterials: Set<String> = []
-
-    struct RecyclingPoint {
-        let coordinate: CLLocationCoordinate2D
-        let materialType: String
-        let title: String
-    }
-
-    var allPoints: [RecyclingPoint] = [
-        RecyclingPoint(coordinate: CLLocationCoordinate2D(latitude: 38.56, longitude: 68.78), materialType: "пластик", title: "Пункт 1"),
-        RecyclingPoint(coordinate: CLLocationCoordinate2D(latitude: 38.57, longitude: 68.79), materialType: "металл", title: "Пункт 2"),
-        RecyclingPoint(coordinate: CLLocationCoordinate2D(latitude: 38.58, longitude: 68.77), materialType: "макулатура", title: "Пункт 3"),
-    ]
-
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -217,27 +225,23 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
 
     
-    func updateMapAnnotations(with points: [RecyclingPoint]) {
-        mapView.removeAnnotations(mapView.annotations)
-        for point in points {
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = point.coordinate
-            annotation.title = point.title
-            annotation.subtitle = point.materialType.capitalized
-            mapView.addAnnotation(annotation)
-        }
-    }
-
     func applyFilter() {
-        // Обнови данные согласно выбранным материалам
-        // Например, если у тебя есть массив всех точек с materialType:
-        
-        let filteredPoints = allPoints.filter { point in
-            selectedMaterials.isEmpty || selectedMaterials.contains(point.materialType)
+            let filteredPoints = allPoints.filter { point in
+                selectedMaterials.isEmpty || selectedMaterials.contains(point.materialType)
+            }
+            updateMapAnnotations(with: filteredPoints)
         }
-        
-        updateMapAnnotations(with: filteredPoints)
-    }
+
+        func updateMapAnnotations(with points: [RecyclingPoint]) {
+            mapView.removeAnnotations(mapView.annotations)
+            for point in points {
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = point.coordinate
+                annotation.title = point.title
+                annotation.subtitle = point.materialType.capitalized
+                mapView.addAnnotation(annotation)
+            }
+        }
 
 
     // 1. Кастомизируем вид аннотации (чтобы была возможность показывать callout)
@@ -261,22 +265,20 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return annotationView
     }
 
-    // 2. Обработка нажатия на кнопку в callout (иконка информации)
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         guard let annotation = view.annotation else { return }
-        
-        // Найдем пункт по координатам аннотации
+
         if let point = allPoints.first(where: {
             $0.coordinate.latitude == annotation.coordinate.latitude &&
             $0.coordinate.longitude == annotation.coordinate.longitude
         }) {
-            let alert = UIAlertController(title: point.title,
-                                          message: "Тип материала: \(point.materialType.capitalized)",
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Закрыть", style: .cancel))
-            present(alert, animated: true)
+            let detailVC = RecyclingPointDetailViewController(point: point)
+            detailVC.modalPresentationStyle = .pageSheet
+            present(detailVC, animated: true)
         }
     }
+
+
 
 
 }
