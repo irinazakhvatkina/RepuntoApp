@@ -7,8 +7,12 @@
 
 import UIKit
 import SnapKit
+import MapKit
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, MKMapViewDelegate {
+    
+    var mapView: MKMapView!
+
     var isDarkMode: Bool {
         return traitCollection.userInterfaceStyle == .dark
     }
@@ -22,6 +26,7 @@ class MapViewController: UIViewController {
         view.backgroundColor = UIColor(named: "background")
         setupNavigationBar()
         updateTheme()
+        setupMapView()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -88,6 +93,39 @@ class MapViewController: UIViewController {
         navigationController?.popToRootViewController(animated: true)
     }
 
-   
-    
+    func setupMapView() {
+        mapView = MKMapView()
+        view.addSubview(mapView)
+
+        mapView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
+            make.left.equalToSuperview().offset(20)
+            make.right.equalToSuperview().offset(-20)
+            make.bottom.equalToSuperview().offset(-20)
+        }
+
+        mapView.layer.cornerRadius = 20
+        mapView.layer.masksToBounds = true
+        mapView.layer.borderColor = UIColor(named: "background")?.cgColor
+        mapView.layer.borderWidth = 2
+
+        mapView.delegate = self
+        mapView.showsUserLocation = true
+
+        let center = CLLocationCoordinate2D(latitude: 38.5598, longitude: 68.7870)
+        let region = MKCoordinateRegion(center: center, latitudinalMeters: 5000, longitudinalMeters: 5000)
+        mapView.setRegion(region, animated: false)
+    }
+
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if let polygon = overlay as? MKPolygon {
+            let renderer = MKPolygonRenderer(polygon: polygon)
+            renderer.fillColor = isDarkMode ? UIColor.systemGreen.withAlphaComponent(0.3) : UIColor.systemBlue.withAlphaComponent(0.3)
+            renderer.strokeColor = UIColor.systemGreen
+            renderer.lineWidth = 2
+            return renderer
+        }
+        return MKOverlayRenderer(overlay: overlay)
+    }
+
 }
