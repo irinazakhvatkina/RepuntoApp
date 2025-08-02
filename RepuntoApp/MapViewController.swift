@@ -19,14 +19,31 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
     var burgerButton: UIButton!
     var themeToggleButton: UIButton!
+    var filterButton: UIButton!
+    var selectedMaterials: Set<String> = []
+
+    struct RecyclingPoint {
+        let coordinate: CLLocationCoordinate2D
+        let materialType: String
+        let title: String
+    }
+
+    var allPoints: [RecyclingPoint] = [
+        RecyclingPoint(coordinate: CLLocationCoordinate2D(latitude: 38.56, longitude: 68.78), materialType: "пластик", title: "Пункт 1"),
+        RecyclingPoint(coordinate: CLLocationCoordinate2D(latitude: 38.57, longitude: 68.79), materialType: "металл", title: "Пункт 2"),
+        RecyclingPoint(coordinate: CLLocationCoordinate2D(latitude: 38.58, longitude: 68.77), materialType: "макулатура", title: "Пункт 3"),
+    ]
+
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "background")
         setupNavigationBar()
+        setupFilter()
         updateTheme()
         setupMapView()
+        applyFilter()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -116,6 +133,112 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let region = MKCoordinateRegion(center: center, latitudinalMeters: 5000, longitudinalMeters: 5000)
         mapView.setRegion(region, animated: false)
     }
+    
+    func setupFilter() {
+        filterButton = UIButton(type: .system)
+        let filterImage = UIImage(systemName: "line.horizontal.3.decrease.circle") // иконка фильтра
+        filterButton.setImage(filterImage, for: .normal)
+        filterButton.tintColor = UIColor(named: "primaryText")
+        filterButton.frame = CGRect(x: 0, y: 0, width: 28, height: 28)
+        filterButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
+
+        let filterBarButton = UIBarButtonItem(customView: filterButton)
+
+        // Добавим справа после themeToggleButton:
+        if var rightItems = navigationItem.rightBarButtonItems {
+            rightItems.append(filterBarButton)
+            navigationItem.rightBarButtonItems = rightItems
+        } else {
+            navigationItem.rightBarButtonItems = [filterBarButton]
+        }
+    }
+    
+    @objc func filterButtonTapped() {
+        let alert = UIAlertController(title: "Фильтр по материалу", message: nil, preferredStyle: .alert)
+        
+        let materials = ["пластик", "металл", "макулатура"]
+        var tempSelected = selectedMaterials
+        
+        for material in materials {
+            let isSelected = tempSelected.contains(material)
+            let title = (isSelected ? "✅ " : "") + material.capitalized
+            alert.addAction(UIAlertAction(title: title, style: .default, handler: { _ in
+                if tempSelected.contains(material) {
+                    tempSelected.remove(material)
+                } else {
+                    tempSelected.insert(material)
+                }
+                self.presentFilterAlert(currentSelection: tempSelected)
+            }))
+        }
+        
+        alert.addAction(UIAlertAction(title: "Очистить", style: .destructive, handler: { _ in
+            self.selectedMaterials.removeAll()
+            self.applyFilter()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Применить", style: .default, handler: { _ in
+            self.selectedMaterials = tempSelected
+            self.applyFilter()
+        }))
+        
+        present(alert, animated: true)
+    }
+
+    func presentFilterAlert(currentSelection: Set<String>) {
+        let alert = UIAlertController(title: "Фильтр по материалу", message: nil, preferredStyle: .alert)
+        let materials = ["пластик", "металл", "макулатура"]
+        var tempSelected = currentSelection
+        
+        for material in materials {
+            let isSelected = tempSelected.contains(material)
+            let title = (isSelected ? "✅ " : "") + material.capitalized
+            alert.addAction(UIAlertAction(title: title, style: .default, handler: { _ in
+                if tempSelected.contains(material) {
+                    tempSelected.remove(material)
+                } else {
+                    tempSelected.insert(material)
+                }
+                self.presentFilterAlert(currentSelection: tempSelected)
+            }))
+        }
+        
+        alert.addAction(UIAlertAction(title: "Очистить", style: .destructive, handler: { _ in
+            self.selectedMaterials.removeAll()
+            self.applyFilter()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Применить", style: .default, handler: { _ in
+            self.selectedMaterials = tempSelected
+            self.applyFilter()
+        }))
+        
+        present(alert, animated: true)
+    }
+
+    
+    func updateMapAnnotations(with points: [RecyclingPoint]) {
+        mapView.removeAnnotations(mapView.annotations)
+        for point in points {
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = point.coordinate
+            annotation.title = point.title
+            annotation.subtitle = point.materialType.capitalized
+            mapView.addAnnotation(annotation)
+        }
+    }
+
+    func applyFilter() {
+        // Обнови данные согласно выбранным материалам
+        // Например, если у тебя есть массив всех точек с materialType:
+        
+        let filteredPoints = allPoints.filter { point in
+            selectedMaterials.isEmpty || selectedMaterials.contains(point.materialType)
+        }
+        
+        updateMapAnnotations(with: filteredPoints)
+    }
+
 
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let polygon = overlay as? MKPolygon {
