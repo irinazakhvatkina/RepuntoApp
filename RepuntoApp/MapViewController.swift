@@ -240,15 +240,43 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
 
 
-    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        if let polygon = overlay as? MKPolygon {
-            let renderer = MKPolygonRenderer(polygon: polygon)
-            renderer.fillColor = isDarkMode ? UIColor.systemGreen.withAlphaComponent(0.3) : UIColor.systemBlue.withAlphaComponent(0.3)
-            renderer.strokeColor = UIColor.systemGreen
-            renderer.lineWidth = 2
-            return renderer
+    // 1. Кастомизируем вид аннотации (чтобы была возможность показывать callout)
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
         }
-        return MKOverlayRenderer(overlay: overlay)
+        
+        let identifier = "RecyclingPoint"
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKPinAnnotationView
+        
+        if annotationView == nil {
+            annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            annotationView?.canShowCallout = true
+            annotationView?.pinTintColor = UIColor(named: "accentColor")
+            annotationView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+        } else {
+            annotationView?.annotation = annotation
+        }
+        
+        return annotationView
     }
+
+    // 2. Обработка нажатия на кнопку в callout (иконка информации)
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        guard let annotation = view.annotation else { return }
+        
+        // Найдем пункт по координатам аннотации
+        if let point = allPoints.first(where: {
+            $0.coordinate.latitude == annotation.coordinate.latitude &&
+            $0.coordinate.longitude == annotation.coordinate.longitude
+        }) {
+            let alert = UIAlertController(title: point.title,
+                                          message: "Тип материала: \(point.materialType.capitalized)",
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Закрыть", style: .cancel))
+            present(alert, animated: true)
+        }
+    }
+
 
 }
